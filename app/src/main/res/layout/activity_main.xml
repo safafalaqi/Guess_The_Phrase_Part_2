@@ -21,7 +21,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvMain"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:layout_constraintVertical_bias="0.96" />
 
     <TextView
@@ -41,11 +41,13 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMain"
-        android:layout_width="403dp"
-        android:layout_height="506dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -53,13 +55,12 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvMain"
-        app:layout_constraintVertical_bias="0.16000003">
+        app:layout_constraintTop_toBottomOf="@+id/rvMain">
 
         <EditText
             android:id="@+id/enteredGuess"

@@ -3,10 +3,13 @@ package com.example.guessthephrasepart2
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputFilter
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,13 +17,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-
-
-
+import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
-
+    private val databaseHelper by lazy{ DatabaseHelper(applicationContext) }
     private lateinit var textEdit: EditText
     private lateinit var textView: TextView
     private lateinit var score: TextView
@@ -33,8 +34,9 @@ class MainActivity : AppCompatActivity() {
     private var checkNoStar = false
     private var guessPhraseCount = 9
     private var guessLetterCount = 9
-    private val str ="coding dojo is great"
+    private var str ="coding dojo is great"
     private var guessedPhraseLetters = arrayListOf<String>()
+    private lateinit var phrases: ArrayList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +50,13 @@ class MainActivity : AppCompatActivity() {
         myRv.adapter = RecyclerViewAdapter(guessedPhraseLetters)
         myRv.layoutManager = LinearLayoutManager(this)
 
+        //get strings from database
+        phrases = databaseHelper.retrieveData()
+
+        str = phrases[Random.nextInt(0,phrases.size)]
+
         score = findViewById<TextView>(R.id.score)
-        score.text = getHighScore().toString()
+        score.text ="High Score: "+ getHighScore().toString()
 
         //take a string and convert each letter into a star character
         //replace all characters to *
@@ -78,13 +85,13 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
     }
     private fun getHighScore(): Int {
         sharedPreferences = this.getSharedPreferences(
             getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         return sharedPreferences.getInt("highScore", 0)
     }
-
     private fun saveHighScore() {
         sharedPreferences = this.getSharedPreferences(
             getString(R.string.preference_file_key), Context.MODE_PRIVATE)
@@ -96,7 +103,6 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-
     private fun guessLetter() {
 
         val guess = textEdit.text.toString().toCharArray(0)
@@ -112,6 +118,7 @@ class MainActivity : AppCompatActivity() {
             textEdit.getText().clear()
         }else if(checkNoStar==true){
             showAlertDialog("You win")
+            textView.text=str
             //then clear the Edit Text field.
             textEdit.getText().clear()
             myRv.adapter!!.notifyDataSetChanged()
@@ -160,6 +167,7 @@ class MainActivity : AppCompatActivity() {
             scoreCount++
             saveHighScore()
             showAlertDialog("You win")
+            textView.text=str
             textEdit.text.clear()
             button.isEnabled = false
             button.isClickable = false
@@ -177,7 +185,6 @@ class MainActivity : AppCompatActivity() {
 
         return false
     }
-
     private fun guessPhrase(){
         val guess = textEdit.text.toString()
 
@@ -202,12 +209,13 @@ class MainActivity : AppCompatActivity() {
             scoreCount++
             saveHighScore()
             showAlertDialog("You win")
-
+            textView.text=str
 
             textEdit.text.clear()
             button.isEnabled = false
             button.isClickable = false
             guessedPhraseLetters.add("You guessed ${textEdit.text.toString()}\n Correct Guess! You win.")
+            textView.text=str
             //then clear the Edit Text field.
             textEdit.getText().clear()
             myRv.adapter!!.notifyDataSetChanged()
@@ -225,9 +233,6 @@ class MainActivity : AppCompatActivity() {
         }
         myRv.scrollToPosition(guessedPhraseLetters.size - 1)
     }
-
-
-
     //this function is used to show Alert Dialog for the user
     private fun showAlertDialog(str:String)
     {
@@ -238,6 +243,7 @@ class MainActivity : AppCompatActivity() {
             // positive button text and action
             .setPositiveButton("Play", DialogInterface.OnClickListener {
                     dialog, id ->  this.recreate()
+                this.str = phrases[Random.nextInt(0,phrases.size)]
 
             })
             // negative button text and action
@@ -251,5 +257,20 @@ class MainActivity : AppCompatActivity() {
         // show alert dialog
         alert.show()
     }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.addPhrase -> {
+                val intent = Intent(this@MainActivity, AddSecretPhrase::class.java)
+                startActivity(intent)
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
 }

@@ -10,9 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GuessThePhrase">
         <activity
-            android:name="com.example.guessthephrasepart2.MainActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:name=".AddSecretPhrase"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
